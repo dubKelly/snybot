@@ -1,6 +1,10 @@
-var page = require('webpage').create();
+var casper = require('casper').create();
 
-page.settings.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36';
+// page.settings.userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36';
+
+// page.onConsoleMessage = function(msg) {
+// 	console.log(msg);
+// };
 
 var date = new Date();
 var hr = date.getHours();
@@ -14,15 +18,14 @@ var hostName = "www.supremenewyork.com";
 var pathName = "/shop/all";
 var href = hostName + pathName;
 
-var articles = [];
-
 // grab old products
-setTimeout(function() {
-	page.open(href, function() {
-		page.evaluate(function() {
-			articles = document.getElementsByTagName('aritcle');
-		});
-	});
-}, drop - 1800000);
 
-phantom.exit();
+casper.start(href, function() {
+	this.echo("access granted");
+});
+
+casper.then(function() {
+	casper.exit();
+})
+
+casper.run();
