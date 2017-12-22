@@ -18,12 +18,12 @@ setTimeout(function() {
 	casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36');
 
 	casper.thenOpen(href, function() {
-		this.evaluate(function() {
-			var articles = document.getElementsByTagName('article');
-			for (var i = 0; i < articles.length; i++) {
-				this.echo(this.getElementAttributes(articles[i]));
-			}
+		var articles = this.evaluate(function() {
+			return document.getElementsByTagName('article');
 		});
+		for (var i = 0; i < articles.length; i++) {
+			this.echo(articles[i]);
+		}
 	});	
 
 	casper.then(function() {
