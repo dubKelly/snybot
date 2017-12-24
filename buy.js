@@ -12,23 +12,64 @@ var hostName = "https://www.supremenewyork.com";
 var pathName = "/shop/all";
 var href = hostName + pathName;
 
-//TODO: set timeout to drop
+var preDropDump;
+var preDropPaths = [];
+var postDropDump;
+var postDropPaths = [];
+
 setTimeout(function() {
 	casper.start();
 	casper.userAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062.120 Safari/537.36');
 
 	casper.thenOpen(href, function() {
-		var articles = this.evaluate(function() {
-			return document.getElementsByTagName('article');
-		});
-		for (var i = 0; i < articles.length; i++) {
-			this.echo(articles[i]);
+		preDropDump = this.getElementsInfo('.inner-article > a');		
+
+		for (var i = 0; i < preDropDump.length; i++) {
+			preDropPaths.push(preDropDump[i].attributes.href);
 		}
-	});	
+	});
+	
+	casper.wait(895000, function() {
+		checkForDrop();
+	});
+
+	casper.then(function() {
+		var productIndex;
+
+		for (var i = 0; i < preDropPaths.length; i++) {
+			productIndex = postDropPaths.indexOf(preDropPaths[i]);
+
+			postDropPaths.splice(productIndex, 1);
+		}
+	});
+
+	casper.then(function() {
+		console.log(postDropPaths);
+	});
 
 	casper.then(function() {
 		casper.exit();
 	});
 
 	casper.run();
-}, 1000);
+}, drop - 900000);
+
+var checkForDrop = function() {
+	casper.wait(5000, function() {
+		casper.reload();
+
+		casper.then(function() {
+		  postDropDump = this.getElementsInfo('.inner-article > a');
+
+		  if (postDropDump.length <= preDropDump.length) {
+		  	console.log("waiting for drop...");
+		  	checkForDrop();
+		  }
+		  else {
+		  	for (var i = 0; i < postDropDump.length; i++) {
+		  		postDropPaths.push(postDropDump[i].attributes.href);
+		  	}
+		  }
+		});
+	});
+}
